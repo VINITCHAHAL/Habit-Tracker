@@ -1,0 +1,2 @@
+module SalahHelper
+end
