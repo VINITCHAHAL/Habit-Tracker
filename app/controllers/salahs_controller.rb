@@ -1,0 +1,2 @@
+class SalahsController < ApplicationController
+end
