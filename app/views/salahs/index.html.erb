@@ -1,3 +1,55 @@
-<div>
-<p>welcome to the index page</p>
+<div class="min-h-screen bg-gray-100 py-8 ml-90">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Page Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Salah Records</h1>
+      <p class="text-gray-600">Track your Salah progress and add new Salah records below.</p>
+    </header>
+
+    <!-- Add New Salah Form -->
+    <div class="bg-white shadow-md rounded-lg p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-6">Add New Salah</h2>
+
+      <%= form_with model: @salah, local: true do |form| %>
+        <div class="mb-4">
+          <%= form.label :salah_name, "Select Salah Name", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"], {},
+            class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        </div>
+
+        <div class="mb-4">
+          <%= form.label :salah_prayed, "Have you prayed this Salah?", class: "block text-sm font-medium text-gray-700" %>
+          <%= form.check_box :salah_prayed,
+            class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" %>
+        </div>
+
+        <div class="flex justify-end mr-50">
+        <%= form.submit "Save Salah",
+            class: "px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
+        </div>
+      <% end %>
+    <!-- Salah Records Table -->
+    <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">
+      <table class="min-w-full border-collapse">
+        <thead class="bg-gray-50 border-b">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salah Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prayed?</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white">
+          <% @salahs.each do |salah| %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-6 py-4 text-gray-900"><%= salah.salah_name %></td>
+              <td class="px-6 py-4 text-gray-900"><%= salah.salah_prayed ? "Yes" : "No" %></td>
+              <td class="px-6 py-4 text-gray-500"><%= salah.created_at.strftime("%d %B %Y, %H:%M %p") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
 </div>
