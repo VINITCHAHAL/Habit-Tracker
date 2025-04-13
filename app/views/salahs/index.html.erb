@@ -5,6 +5,7 @@
     <header class="text-center mb-8">
       <h1 class="text-3xl font-extrabold text-gray-900 mb-4">Salah Records</h1>
       <p class="text-gray-600">Track your Salah progress and add new Salah records below.</p>
+      <%= button_to "Log out",session_path, method: :delete, class: "mt-4 px-4 py-2 bg-red-600 text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
     </header>
 
     <!-- Add New Salah Form -->
@@ -14,7 +15,7 @@
       <%= form_with model: @salah, local: true do |form| %>
         <div class="mb-4">
           <%= form.label :salah_name, "Select Salah Name", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"], {},
+          <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
             class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
         </div>
 
@@ -25,10 +26,12 @@
         </div>
 
         <div class="flex justify-end mr-50">
-        <%= form.submit "Save Salah",
-            class: "px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
+          <%= form.submit "Save Salah",
+              class: "px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
         </div>
       <% end %>
+    </div>
+
     <!-- Salah Records Table -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden mb-8">
       <table class="min-w-full border-collapse">
@@ -50,6 +53,6 @@
         </tbody>
       </table>
     </div>
-    </div>
+
   </div>
 </div>
