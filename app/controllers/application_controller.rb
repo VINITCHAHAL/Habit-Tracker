@@ -9,5 +9,4 @@ class ApplicationController < ActionController::Base
     redirect_to new_session_path, alert: "Please log in to continue." unless current_user
   end
   include Authentication
-  allow_browser versions: :modern
 end
