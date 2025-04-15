@@ -50,7 +50,11 @@
 
     <!-- Salah Summary -->
     <div class="mb-4 text-sm text-gray-600">
-      You’ve logged <strong><%= @salahs.count %></strong> Salah<%= 's' unless @salahs.count == 1 %> today.
+      <% if @salahs.any? %>
+        You’ve logged <strong><%= @salahs.count %></strong> Salah<%= 's' unless @salahs.count == 1 %> today.
+      <% else %>
+        You haven’t logged any Salahs for today.
+      <% end %>
     </div>
 
     <!-- Salah Records Table -->
