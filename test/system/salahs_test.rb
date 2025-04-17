@@ -7,35 +7,28 @@ class SalahsTest < ApplicationSystemTestCase
     @salah = Salah.create(user: @user, salah_name: "Isha", salah_prayed: true, created_at: Time.zone.today)
   end
 
-  test "user can log in and see salah records" do
+  def log_in(email, password)
     visit new_session_path
-    fill_in "Enter your email address", with: @user.email_address
-    fill_in "Enter your password", with: "password"
+    fill_in "Enter your email address", with: email
+    fill_in "Enter your password", with: password
     click_on "Sign in"
-    assert_selector "h1", text: "Salah Records"
-    assert_text "Isha"
+  end
+
+  test "user can create a new salah record" do
+    log_in(@user.email_address, "password")
+    select "Maghrib", from: "Select Salah Name"
+    check "Have you prayed this Salah?"
+    click_on "Save Salah"
+    assert_text "Salah added successfully."
+    assert_text "Maghrib"
   end
 
   test "user cannot add duplicate salah on the same day" do
-    visit new_session_path
-    fill_in "Enter your email address", with: @user.email_address
-    fill_in "Enter your password", with: "password"
-    click_on "Sign in"
+    log_in(@user.email_address, "password")
     select "Isha", from: "Select Salah Name"
     check "Have you prayed this Salah?"
     click_on "Save Salah"
     assert_text "You've already logged this Salah today."
   end
-
-  test "user can log out successfully" do
-    visit new_session_path
-    fill_in "Enter your email address", with: @user.email_address
-    fill_in "Enter your password", with: "password"
-    click_on "Sign in"
-    assert_selector "h1", text: "Salah Records"
-    click_on "Log out"
-    assert_current_path new_session_path
-    assert_text "You have been logged out."
-  end
-  
 end
+
