@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gray-100 lg:ml-90 py-8">
+<div class="bg-gray-100 justify-center py-8">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
 
     <!-- Flash Messages -->
@@ -12,7 +12,7 @@
     <header class="text-center mb-8">
       <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Salah Records for <%= current_user.email_address %></h1>
       <p class="text-gray-600 text-base">Track your Salah progress and add new Salah records below.</p>
-      <%= button_to "Log out", session_path, method: :delete, class: "mt-4 px-4 py-2 bg-red-600 text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+      <%= button_to "Log out", session_path, method: :delete, class: "mt-4 px-4 py-2 bg-red-500 text-sm text-white font-medium rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
     </header>
 
     <!-- Add New Salah Form -->
