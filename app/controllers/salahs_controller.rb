@@ -4,7 +4,7 @@ class SalahsController < ApplicationController
   def index
     selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
     @salah = Salah.new
-    @salahs = current_user.salahs.where(created_at: selected_date.all_day).order(created_at: :desc)
+    @salahs = current_user.salahs.where(created_at: selected_date.all_day)
   end
 
   def create
@@ -21,7 +21,7 @@ class SalahsController < ApplicationController
     if @salah.save
       redirect_to salahs_path, notice: "Salah added successfully."
     else
-      @salahs = current_user.salahs.where(created_at: Time.zone.today.all_day).order(created_at: :desc)
+      @salahs = current_user.salahs.where(created_at: Time.zone.today.all_day)
       render :index, alert: "Error adding Salah."
     end
   end
