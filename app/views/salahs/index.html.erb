@@ -1,28 +1,31 @@
-<div class="bg-gray-100 justify-center py-8">
-  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="bg-gray-50 min-h-screen py-10">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
     <!-- Flash Messages -->
     <% flash.each do |key, message| %>
-      <div class="p-4 mb-4 text-sm rounded-md <%= key == 'notice' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>">
+      <div class="mb-6 px-4 py-3 rounded-md text-sm font-medium 
+        <%= key == 'notice' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> shadow-sm">
         <%= message %>
       </div>
     <% end %>
 
     <!-- Page Header -->
-    <header class="text-center mb-8">
-      <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Salah Records for <%= current_user.email_address %></h1>
-      <p class="text-gray-600 text-base">Track your Salah progress and add new Salah records below.</p>
-      <%= button_to "Log out", session_path, method: :delete, class: "mt-4 px-4 py-2 bg-red-500 text-sm text-white font-medium rounded-md hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+    <header class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Salah Records</h1>
+      <p class="text-gray-600">Track your Salah and reflect on your daily prayers.</p>
+      <p class="text-sm text-gray-400 mt-1">Logged in as <%= current_user.email_address %></p>
+      <%= button_to "Log out", session_path, method: :delete,
+          class: "inline-block mt-4 px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-full shadow-md transition" %>
     </header>
 
     <!-- Add New Salah Form -->
-    <div class="bg-white shadow-md rounded-lg p-6 mb-10">
-      <h2 class="text-xl font-bold text-gray-900 mb-6">Add New Salah</h2>
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-12 space-y-6">
+      <h2 class="text-2xl font-semibold text-gray-800">Add New Salah</h2>
 
       <%= form_with model: @salah, local: true do |form| %>
         <% if @salah.errors.any? %>
-          <div class="mb-4 bg-red-100 text-red-700 px-4 py-3 rounded">
-            <ul class="text-sm list-disc pl-5">
+          <div class="bg-red-50 border-l-4 border-red-400 text-red-800 p-4 rounded-md text-sm">
+            <ul class="list-disc pl-5 space-y-1">
               <% @salah.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
               <% end %>
@@ -30,59 +33,64 @@
           </div>
         <% end %>
 
-        <div class="mb-4">
-          <%= form.label :salah_name, "Select Salah Name", class: "block text-sm font-medium text-gray-700" %>
-          <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-            class: "mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" %>
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div>
+            <%= form.label :salah_name, "Salah Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
+                class: "w-full rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm shadow-sm" %>
+          </div>
+
+          <div class="flex items-center mt-2 sm:mt-0">
+            <%= form.check_box :salah_prayed,
+                class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
+            <%= form.label :salah_prayed, "I prayed this Salah", class: "text-sm text-gray-700" %>
+          </div>
         </div>
 
-        <div class="mb-4 flex items-center">
-          <%= form.check_box :salah_prayed, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-2" %>
-          <%= form.label :salah_prayed, "Have you prayed this Salah?", class: "text-sm text-gray-700" %>
-        </div>
-
-        <div class="flex justify-end">
+        <div class="text-right">
           <%= form.submit "Save Salah",
-            class: "px-6 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" %>
+              class: "px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium text-sm rounded-full shadow-md transition" %>
         </div>
       <% end %>
     </div>
 
     <!-- Salah Summary -->
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="text-sm text-gray-600 mb-6 text-center">
       You’ve logged <strong><%= @salahs.count %></strong> Salah<%= 's' unless @salahs.count == 1 %> today.
     </div>
 
-    <!-- Salah Records Table -->
-    <div class="bg-white shadow-md rounded-lg overflow-x-auto">
-      <% if @salahs.any? %>
-        <table class="min-w-full text-sm text-left text-gray-700">
-          <thead class="bg-gray-50 border-b text-xs font-semibold uppercase tracking-wide text-gray-500">
-            <tr>
-              <th class="px-6 py-3">Salah Name</th>
-              <th class="px-6 py-3">Prayed?</th>
-              <th class="px-6 py-3">Created At</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @salahs.each do |salah| %>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 font-medium"><%= salah.salah_name %></td>
-                <td class="px-6 py-4">
-                  <% if salah.salah_prayed %>
-                    <span class="text-green-600 font-semibold">✔ Prayed</span>
-                  <% else %>
-                    <span class="text-red-500 font-semibold">✘ Missed</span>
-                  <% end %>
-                </td>
-                <td class="px-6 py-4 text-gray-500"><%= salah.created_at.strftime("%d %b %Y, %I:%M %p") %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <div class="p-6 text-center text-gray-500 text-sm">No Salah records found for today.</div>
+    <!-- Salah Records -->
+    <div class="space-y-10">
+      <% @salahs.each do |salah| %>
+        <div class="bg-white p-5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+          <div class="space-y-1 lg:space-x-10">
+            <p class="text-lg font-semibold text-gray-800"><%= salah.salah_name %></p>
+            <p class="text-sm text-gray-500">Logged at <%= salah.created_at.strftime("%d %b %Y, %I:%M %p") %></p>
+            <p class="text-sm">
+              <% if salah.salah_prayed %>
+                <span class="text-green-600 font-medium">✔ Prayed</span>
+              <% else %>
+                <span class="text-red-500 font-medium">✘ Missed</span>
+              <% end %>
+            </p>
+          </div>
+
+          <div class="flex gap-2 sm:gap-3">
+            <%= button_to "Delete", salah_path(salah), method: :delete,
+                class: "px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-full shadow-sm transition" %>
+
+            <%= button_to "Toggle Status", salah_path(salah, toggle_status: true), method: :patch,
+                class: "px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-full shadow-sm transition" %>
+          </div>
+        </div>
+      <% end %>
+
+      <% if @salahs.empty? %>
+        <div class="bg-white p-6 text-center text-gray-500 text-sm rounded-xl shadow-sm">
+          No Salah records found for today.
+        </div>
       <% end %>
     </div>
+
   </div>
 </div>

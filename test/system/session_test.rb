@@ -42,4 +42,3 @@ class SessionTest < ApplicationSystemTestCase
     assert_selector "#alert", text: "Try another email address or password."
   end
 end
-
