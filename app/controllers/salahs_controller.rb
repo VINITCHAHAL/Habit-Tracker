@@ -1,6 +1,6 @@
 class SalahsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_salah, only: [:destroy, :update]
+  before_action :set_salah, only: [ :destroy, :update ]
 
   def index
     selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
