@@ -31,4 +31,3 @@ class SalahsTest < ApplicationSystemTestCase
     assert_text "You've already logged this Salah today."
   end
 end
-
