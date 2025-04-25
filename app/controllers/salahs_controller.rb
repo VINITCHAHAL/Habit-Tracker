@@ -5,7 +5,11 @@ class SalahsController < ApplicationController
   def index
     selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
     @salah = Salah.new
+    @salah.salah_prayed = true
     @salahs = current_user.salahs.where(created_at: selected_date.all_day)
+    salah_order = [ "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha" ]
+    recorded_salahs = @salahs.pluck(:salah_name)
+    @salah.salah_name = salah_order.find { |s| !recorded_salahs.include?(s) } || salah_order.first
   end
 
   def create
