@@ -45,6 +45,12 @@
                 class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
             <%= form.label :salah_prayed, "Have you prayed this Salah?", class: "text-sm text-gray-700" %>
           </div>
+
+          <div class="flex items-center mt-2 sm:mt-0">
+            <%= form.check_box :prayed_in_masjid, {checked: false},
+                class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
+            <%= form.label :prayed_in_masjid, "Did you pray in masjid?", class: "text-sm text-gray-700" %>
+          </div>
         </div>
 
         <div class="text-center mt-4">
@@ -66,13 +72,24 @@
           <div class="space-y-1 lg:space-x-10">
             <p class="text-lg font-semibold text-gray-800"><%= salah.salah_name %></p>
             <p class="text-sm text-gray-500">Logged at <%= salah.created_at.strftime("%d %b %Y, %I:%M %p") %></p>
-            <p class="text-sm">
+            <div class="flex flex-col space-y-1">
+              <p class="text-sm">
+                <% if salah.salah_prayed %>
+                  <span class="text-green-600 font-medium">✔ Prayed</span>
+                <% else %>
+                  <span class="text-red-500 font-medium">✘ Missed</span>
+                <% end %>
+              </p>
               <% if salah.salah_prayed %>
-                <span class="text-green-600 font-medium">✔ Prayed</span>
-              <% else %>
-                <span class="text-red-500 font-medium">✘ Missed</span>
+                <p class="text-sm">
+                  <% if salah.prayed_in_masjid %>
+                    <span class="text-green-600 font-medium">✔ In Masjid</span>
+                  <% else %>
+                    <span class="text-blue-500 font-medium">At Home/Other</span>
+                  <% end %>
+                </p>
               <% end %>
-            </p>
+            </div>
           </div>
 
           <div class="flex gap-2 sm:gap-3">
