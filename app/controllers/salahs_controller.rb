@@ -51,7 +51,7 @@ class SalahsController < ApplicationController
 
   private
   def salah_params
-    params.require(:salah).permit(:salah_name, :salah_prayed)
+    params.require(:salah).permit(:salah_name, :salah_prayed, :prayed_in_masjid)
   end
 
   def set_salah
