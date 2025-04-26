@@ -3,9 +3,24 @@ class SalahsController < ApplicationController
   before_action :set_salah, only: [ :destroy, :update ]
 
   def index
-    selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
+    @view_mode = params[:view] || 'daily'
+    @selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
+
+    @salahs = case @view_mode
+    when 'weekly'
+      start_date = @selected_date.beginning_of_week
+      end_date = @selected_date.end_of_week
+      current_user.salahs.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+               
+    when 'monthly'
+      start_date = @selected_date.beginning_of_month
+      end_date = @selected_date.end_of_month
+      current_user.salahs.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
+    else 
+      current_user.salahs.where(created_at: @selected_date.all_day)
+    end
+
     @salah = Salah.new
-    @salahs = current_user.salahs.where(created_at: selected_date.all_day)
   end
 
   def create
