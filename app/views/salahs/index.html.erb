@@ -14,98 +14,170 @@
       <h1 class="text-4xl font-bold text-gray-900 mb-2">Salah Records</h1>
       <p class="text-gray-600">Track your Salah and reflect on your daily prayers.</p>
       <p class="text-sm text-gray-400 mt-1">Logged in as <%= current_user.email_address %></p>
+      
+      <!-- View Mode Selector -->
+      <div class="mt-4 flex justify-center items-center space-x-4 mb-6">
+        <%= link_to "Daily", salahs_path(view: 'daily', date: @selected_date), 
+            class: "px-6 py-2 #{@view_mode == 'daily' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'} font-medium text-sm rounded-full shadow-sm transition hover:bg-indigo-500 hover:text-white" %>
+        <%= link_to "Weekly", salahs_path(view: 'weekly', date: @selected_date), 
+            class: "px-6 py-2 #{@view_mode == 'weekly' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'} font-medium text-sm rounded-full shadow-sm transition hover:bg-indigo-500 hover:text-white" %>
+        <%= link_to "Monthly", salahs_path(view: 'monthly', date: @selected_date), 
+            class: "px-6 py-2 #{@view_mode == 'monthly' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700'} font-medium text-sm rounded-full shadow-sm transition hover:bg-indigo-500 hover:text-white" %>
+      </div>
+
+      <!-- Return to Today Button -->
+      <% if @selected_date.to_date != Time.zone.today %>
+        <div class="mb-6">
+          <%= link_to salahs_path(view: @view_mode), 
+              class: "inline-flex items-center px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium text-sm rounded-full shadow-md transition" do %>
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Return to Today
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Date Navigation -->
+      <div class="mt-4 flex justify-center items-center space-x-6">
+        <%= link_to salahs_path(view: @view_mode, date: case @view_mode
+              when 'weekly' then @selected_date.prev_week
+              when 'monthly' then @selected_date.prev_month
+              else @selected_date.yesterday end), 
+            class: "flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 transition text-gray-700" do %>
+          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          <span class="font-medium text-sm">Previous</span>
+        <% end %>
+        
+        <div class="flex flex-col items-center">
+          <span class="text-xl font-semibold text-gray-900">
+            <%= case @view_mode 
+                when 'weekly' then "#{@selected_date.beginning_of_week.strftime('%B %d')} - #{@selected_date.end_of_week.strftime('%B %d, %Y')}"
+                when 'monthly' then @selected_date.strftime('%B %Y')
+                else @selected_date.strftime('%B %d, %Y')
+                end %>
+          </span>
+        </div>
+
+        <% if @selected_date.to_date < Time.zone.today %>
+          <%= link_to salahs_path(view: @view_mode, date: case @view_mode
+                when 'weekly' then @selected_date.next_week
+                when 'monthly' then @selected_date.next_month
+                else @selected_date.tomorrow end),
+              class: "flex items-center px-4 py-2 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 transition text-gray-700" do %>
+            <span class="font-medium text-sm">Next</span>
+            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          <% end %>
+        <% end %>
+      </div>
+
       <%= button_to "Log out", session_path, method: :delete,
           class: "inline-block mt-4 px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-full shadow-md transition" %>
     </header>
 
-    <!-- Add New Salah Form -->
-    <div class="bg-white p-6 rounded-xl shadow-sm mb-12 space-y-6">
-      <h2 class="text-2xl font-semibold text-gray-800">Add New Salah</h2>
+    <!-- Add New Salah Form - Only show for today -->
+    <% if @selected_date.to_date == Time.zone.today && @view_mode == 'daily' %>
+      <div class="bg-white p-6 rounded-xl shadow-sm mb-12 space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-800">Add New Salah</h2>
 
-      <%= form_with model: @salah, local: true do |form| %>
-        <% if @salah.errors.any? %>
-          <div class="bg-red-50 border-l-4 border-red-400 text-red-800 p-4 rounded-md text-sm">
-            <ul class="list-disc pl-5 space-y-1">
-              <% @salah.errors.full_messages.each do |message| %>
-                <li><%= message %></li>
-              <% end %>
-            </ul>
+        <%= form_with model: @salah, local: true do |form| %>
+          <% if @salah.errors.any? %>
+            <div class="bg-red-50 border-l-4 border-red-400 text-red-800 p-4 rounded-md text-sm">
+              <ul class="list-disc pl-5 space-y-1">
+                <% @salah.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="grid sm:grid-rows-2 gap-2">
+            <div>
+              <%= form.label :salah_name, "Select Salah Name", class: "block text-sm text-gray-700 mb-1" %>
+              <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
+                  {selected: @salah.salah_name},
+                  class: "w-full rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm shadow-sm" %>
+            </div>
+
+            <div class="flex items-center mt-2 sm:mt-0">
+              <%= form.check_box :salah_prayed, {checked: true},
+                  class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
+              <%= form.label :salah_prayed, "Have you prayed this Salah?", class: "text-sm text-gray-700" %>
+            </div>
+
+            <div class="flex items-center mt-2 sm:mt-0">
+              <%= form.check_box :prayed_in_masjid, {checked: false},
+                  class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
+              <%= form.label :prayed_in_masjid, "Did you pray in masjid?", class: "text-sm text-gray-700" %>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <%= form.submit "Save Salah",
+                class: "px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium text-sm rounded-full shadow-md transition" %>
           </div>
         <% end %>
-
-        <div class="grid sm:grid-rows-2 gap-2">
-          <div>
-            <%= form.label :salah_name, "Select Salah Name", class: "block text-sm text-gray-700 mb-1" %>
-            <%= form.select :salah_name, ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-                {selected: @salah.salah_name},
-                class: "w-full rounded-md border border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 text-sm shadow-sm" %>
-          </div>
-
-          <div class="flex items-center mt-2 sm:mt-0">
-            <%= form.check_box :salah_prayed, {checked: true},
-                class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
-            <%= form.label :salah_prayed, "Have you prayed this Salah?", class: "text-sm text-gray-700" %>
-          </div>
-
-          <div class="flex items-center mt-2 sm:mt-0">
-            <%= form.check_box :prayed_in_masjid, {checked: false},
-                class: "h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 mr-2" %>
-            <%= form.label :prayed_in_masjid, "Did you pray in masjid?", class: "text-sm text-gray-700" %>
-          </div>
-        </div>
-
-        <div class="text-center mt-4">
-          <%= form.submit "Save Salah",
-              class: "px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium text-sm rounded-full shadow-md transition" %>
-        </div>
-      <% end %>
-    </div>
+      </div>
+    <% end %>
 
     <!-- Salah Summary -->
     <div class="text-sm text-gray-600 mb-6 text-center">
-      You’ve logged <strong><%= @salahs.count %></strong> Salah<%= 's' unless @salahs.count == 1 %> today.
+      <%= case @view_mode 
+          when 'weekly' then "Showing records for week of #{@selected_date.beginning_of_week.strftime('%B %d, %Y')}"
+          when 'monthly' then "Showing records for #{@selected_date.strftime('%B %Y')}"
+          else @selected_date.to_date == Time.zone.today ? 
+               "You've logged <strong>#{@salahs.count}</strong> Salah#{@salahs.count == 1 ? '' : 's'} today." :
+               "Showing records for #{@selected_date.strftime('%B %d, %Y')}"
+          end.html_safe %>
     </div>
 
     <!-- Salah Records -->
     <div class="space-y-10">
-      <% @salahs.each do |salah| %>
-        <div class="bg-white p-5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div class="space-y-1 lg:space-x-10">
-            <p class="text-lg font-semibold text-gray-800"><%= salah.salah_name %></p>
-            <p class="text-sm text-gray-500">Logged at <%= salah.created_at.strftime("%d %b %Y, %I:%M %p") %></p>
-            <div class="flex flex-col space-y-1">
-              <p class="text-sm">
-                <% if salah.salah_prayed %>
-                  <span class="text-green-600 font-medium">✔ Prayed</span>
-                <% else %>
-                  <span class="text-red-500 font-medium">✘ Missed</span>
-                <% end %>
-              </p>
-              <% if salah.salah_prayed %>
+      <% if @salahs.any? %>
+        <% @salahs.each do |salah| %>
+          <div class="bg-white p-5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+            <div class="space-y-1 lg:space-x-10">
+              <p class="text-lg font-semibold text-gray-800"><%= salah.salah_name %></p>
+              <p class="text-sm text-gray-500">Logged at <%= salah.created_at.strftime("%I:%M %p") %></p>
+              <div class="flex flex-col space-y-1">
                 <p class="text-sm">
-                  <% if salah.prayed_in_masjid %>
-                    <span class="text-green-600 font-medium">✔ In Masjid</span>
+                  <% if salah.salah_prayed %>
+                    <span class="text-green-600 font-medium">✔ Prayed</span>
                   <% else %>
-                    <span class="text-blue-500 font-medium">At Home/Other</span>
+                    <span class="text-red-500 font-medium">✘ Missed</span>
                   <% end %>
                 </p>
-              <% end %>
+                <% if salah.salah_prayed %>
+                  <p class="text-sm">
+                    <% if salah.prayed_in_masjid %>
+                      <span class="text-green-600 font-medium">✔ In Masjid</span>
+                    <% else %>
+                      <span class="text-blue-500 font-medium">At Home/Other</span>
+                    <% end %>
+                  </p>
+                <% end %>
+              </div>
             </div>
+
+            <!-- Show action buttons only for today's records -->
+            <% if @selected_date&.to_date == Time.zone.today %>
+              <div class="flex gap-2 sm:gap-3">
+                <%= button_to "Delete", salah_path(salah), method: :delete,
+                    class: "px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-full shadow-sm transition" %>
+
+                <%= button_to "Toggle Status", salah_path(salah, toggle_status: true), method: :patch,
+                    class: "px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-full shadow-sm transition" %>
+              </div>
+            <% end %>
           </div>
-
-          <div class="flex gap-2 sm:gap-3">
-            <%= button_to "Delete", salah_path(salah), method: :delete,
-                class: "px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-full shadow-sm transition" %>
-
-            <%= button_to "Toggle Status", salah_path(salah, toggle_status: true), method: :patch,
-                class: "px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-full shadow-sm transition" %>
-          </div>
-        </div>
-      <% end %>
-
-      <% if @salahs.empty? %>
+        <% end %>
+      <% else %>
         <div class="bg-white p-6 text-center text-gray-500 text-sm rounded-xl shadow-sm">
-          No Salah records found for today.
+          No Salah records found for this <%= @view_mode %> period.
         </div>
       <% end %>
     </div>
