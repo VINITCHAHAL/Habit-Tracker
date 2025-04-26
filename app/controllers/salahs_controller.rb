@@ -4,13 +4,13 @@ class SalahsController < ApplicationController
 
   def index
     @selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
-    @view_mode = params[:view].present? ? params[:view] : 'daily'
+    @view_mode = params[:view].present? ? params[:view] : "daily"
     @salah = Salah.new
 
     @salahs = case @view_mode
-    when 'weekly'
+    when "weekly"
       current_user.salahs.where(created_at: @selected_date.beginning_of_week..@selected_date.end_of_week)
-    when 'monthly'
+    when "monthly"
       current_user.salahs.where(created_at: @selected_date.beginning_of_month..@selected_date.end_of_month)
     else
       current_user.salahs.where(created_at: @selected_date.all_day)
