@@ -6,6 +6,9 @@ class SalahsController < ApplicationController
     selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
     @salah = Salah.new
     @salahs = current_user.salahs.where(created_at: selected_date.all_day)
+    salah_order = [ "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha" ]
+    recorded_salahs = @salahs.pluck(:salah_name)
+    @salah.salah_name = salah_order.find { |s| !recorded_salahs.include?(s) } || salah_order.first
   end
 
   def create
@@ -47,7 +50,7 @@ class SalahsController < ApplicationController
 
   private
   def salah_params
-    params.require(:salah).permit(:salah_name, :salah_prayed)
+    params.require(:salah).permit(:salah_name, :salah_prayed, :prayed_in_masjid)
   end
 
   def set_salah

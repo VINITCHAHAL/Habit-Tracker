@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_03_26_171153) do
+ActiveRecord::Schema[8.1].define(version: 2025_04_26_000141) do
   create_table "salahs", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "prayed_in_masjid", default: false
     t.string "salah_name"
     t.boolean "salah_prayed"
     t.datetime "updated_at", null: false
