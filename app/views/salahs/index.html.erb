@@ -126,13 +126,17 @@
 
     <!-- Salah Summary -->
     <div class="text-sm text-gray-600 mb-6 text-center">
-      <%= case @view_mode 
-          when 'weekly' then "Showing records for week of #{@selected_date.beginning_of_week.strftime('%B %d, %Y')}"
-          when 'monthly' then "Showing records for #{@selected_date.strftime('%B %Y')}"
-          else @selected_date.to_date == Time.zone.today ? 
-               "You've logged <strong>#{@salahs.count}</strong> Salah#{@salahs.count == 1 ? '' : 's'} today." :
-               "Showing records for #{@selected_date.strftime('%B %d, %Y')}"
-          end.html_safe %>
+    <%= case @view_mode 
+    when 'weekly' then "Showing records for week of #{@selected_date.beginning_of_week.strftime('%B %d, %Y')}"
+    when 'monthly' then "Showing records for #{@selected_date.strftime('%B %Y')}"
+    else
+      begin
+        date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
+        "Showing records for #{date.strftime('%B %d, %Y')}"
+      rescue ArgumentError
+        "Invalid date provided."
+      end
+    end.html_safe %>
     </div>
 
     <!-- Salah Records -->
