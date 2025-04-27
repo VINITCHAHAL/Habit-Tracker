@@ -3,8 +3,8 @@ class SalahsController < ApplicationController
   before_action :set_salah, only: [ :destroy, :update ]
 
   def index
-    @selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
-    @view_mode = params[:view].present? ? params[:view] : "daily"
+    @view_mode = sanitize_view_mode
+    @selected_date = sanitize_date_param
     @salah = Salah.new
 
     @salahs = case @view_mode
@@ -69,5 +69,25 @@ class SalahsController < ApplicationController
     @salah = Salah.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to salahs_path, alert: "Salah not found."
+  end
+
+  def sanitize_date_param
+    return Time.zone.today unless params[:date].present?
+
+    begin
+      date = Date.parse(params[:date].to_s)
+      if date.between?(1.year.ago.to_date, Time.zone.today)
+        date
+      else
+        Time.zone.today
+      end
+    rescue ArgumentError, TypeError
+      Time.zone.today
+    end
+  end
+
+  def sanitize_view_mode
+    return "daily" unless params[:view].present?
+    [ "daily", "weekly", "monthly" ].include?(params[:view]) ? params[:view] : "daily"
   end
 end
