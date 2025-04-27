@@ -53,11 +53,17 @@
         
         <div class="flex flex-col items-center">
           <span class="text-xl font-semibold text-gray-900">
-            <%= case @view_mode 
-                when 'weekly' then "#{@selected_date.beginning_of_week.strftime('%B %d')} - #{@selected_date.end_of_week.strftime('%B %d, %Y')}"
-                when 'monthly' then @selected_date.strftime('%B %Y')
-                else @selected_date.strftime('%B %d, %Y')
-                end %>
+            <%=
+              formatted_date = case @view_mode 
+                when 'weekly'
+                  "#{ERB::Util.h(@selected_date.beginning_of_week.strftime('%B %d'))} - #{ERB::Util.h(@selected_date.end_of_week.strftime('%B %d, %Y'))}"
+                when 'monthly'
+                  ERB::Util.h(@selected_date.strftime('%B %Y'))
+                else
+                  ERB::Util.h(@selected_date.strftime('%B %d, %Y'))
+                end
+              formatted_date
+            %>
           </span>
         </div>
 
@@ -126,17 +132,21 @@
 
     <!-- Salah Summary -->
     <div class="text-sm text-gray-600 mb-6 text-center">
-    <%= case @view_mode 
-    when 'weekly' then "Showing records for week of #{@selected_date.beginning_of_week.strftime('%B %d, %Y')}"
-    when 'monthly' then "Showing records for #{@selected_date.strftime('%B %Y')}"
-    else
-      begin
-        date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
-        "Showing records for #{date.strftime('%B %d, %Y')}"
-      rescue ArgumentError
-        "Invalid date provided."
-      end
-    end.html_safe %>
+      <%=
+        summary = case @view_mode 
+          when 'weekly'
+            "Showing records for week of #{ERB::Util.h(@selected_date.beginning_of_week.strftime('%B %d, %Y'))}"
+          when 'monthly'
+            "Showing records for #{ERB::Util.h(@selected_date.strftime('%B %Y'))}"
+          else
+            if @selected_date.to_date == Time.zone.today
+              "You've logged <strong>#{@salahs.count}</strong> Salah#{@salahs.count == 1 ? '' : 's'} today.".html_safe
+            else
+              "Showing records for #{ERB::Util.h(@selected_date.strftime('%B %d, %Y'))}"
+            end
+          end
+        summary
+      %>
     </div>
 
     <!-- Salah Records -->
