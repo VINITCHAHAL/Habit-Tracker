@@ -3,12 +3,24 @@ class SalahsController < ApplicationController
   before_action :set_salah, only: [ :destroy, :update ]
 
   def index
-    selected_date = params[:date].present? ? Date.parse(params[:date]) : Time.zone.today
+    @view_mode = sanitize_view_mode
+    @selected_date = sanitize_date_param
     @salah = Salah.new
-    @salahs = current_user.salahs.where(created_at: selected_date.all_day)
-    salah_order = [ "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha" ]
-    recorded_salahs = @salahs.pluck(:salah_name)
-    @salah.salah_name = salah_order.find { |s| !recorded_salahs.include?(s) } || salah_order.first
+
+    @salahs = case @view_mode
+    when "weekly"
+      current_user.salahs.where(created_at: @selected_date.beginning_of_week..@selected_date.end_of_week)
+    when "monthly"
+      current_user.salahs.where(created_at: @selected_date.beginning_of_month..@selected_date.end_of_month)
+    else
+      current_user.salahs.where(created_at: @selected_date.all_day)
+    end
+
+    if @selected_date == Time.zone.today
+      salah_order = [ "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha" ]
+      recorded_salahs = @salahs.pluck(:salah_name)
+      @salah.salah_name = salah_order.find { |s| !recorded_salahs.include?(s) } || salah_order.first
+    end
   end
 
   def create
@@ -57,5 +69,25 @@ class SalahsController < ApplicationController
     @salah = Salah.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     redirect_to salahs_path, alert: "Salah not found."
+  end
+
+  def sanitize_date_param
+    return Time.zone.today unless params[:date].present?
+
+    begin
+      date = Date.parse(params[:date].to_s)
+      if date.between?(1.year.ago.to_date, Time.zone.today)
+        date
+      else
+        Time.zone.today
+      end
+    rescue ArgumentError, TypeError
+      Time.zone.today
+    end
+  end
+
+  def sanitize_view_mode
+    return "daily" unless params[:view].present?
+    [ "daily", "weekly", "monthly" ].include?(params[:view]) ? params[:view] : "daily"
   end
 end
