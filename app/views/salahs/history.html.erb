@@ -1,0 +1,162 @@
+<div class="bg-gray-50 min-h-screen py-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <header class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">Salah History</h1>
+      <p class="text-gray-600">Review and analyze your prayer habits</p>
+      <div class="mt-4 flex justify-center space-x-4">
+        <%= link_to "Back to Today", salahs_path, class: "text-indigo-600 hover:text-indigo-800" %>
+      </div>
+    </header>
+
+    <!-- View Toggle -->
+    <div class="flex justify-center mb-8 space-x-4">
+      <%= link_to "Weekly View", history_salahs_path(view: 'weekly', date: @current_date),
+          class: "px-4 py-2 rounded-full #{@view_type == 'weekly' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}" %>
+      <%= link_to "Monthly View", history_salahs_path(view: 'monthly', date: @current_date),
+          class: "px-4 py-2 rounded-full #{@view_type == 'monthly' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}" %>
+    </div>
+
+    <!-- Date Navigation -->
+    <div class="flex justify-between items-center mb-8">
+      <%= link_to @view_type == 'weekly' ? "← Previous Week" : "← Previous Month",
+          history_salahs_path(view: @view_type, date: @view_type == 'weekly' ? @current_date - 1.week : @current_date - 1.month),
+          class: "text-indigo-600 hover:text-indigo-800" %>
+      
+      <span class="text-lg font-semibold">
+        <% if @view_type == 'weekly' %>
+          Week of <%= @start_date.strftime("%B %d") %> - <%= @end_date.strftime("%B %d, %Y") %>
+        <% else %>
+          <%= @start_date.strftime("%B %Y") %>
+        <% end %>
+      </span>
+
+      <%= link_to @view_type == 'weekly' ? "Next Week →" : "Next Month →",
+          history_salahs_path(view: @view_type, date: @view_type == 'weekly' ? @current_date + 1.week : @current_date + 1.month),
+          class: "text-indigo-600 hover:text-indigo-800" %>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Overall Progress</h2>
+      
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-sm font-medium text-gray-700">Total Progress</span>
+          <span class="text-sm font-medium text-gray-700">
+            <%= @period_stats[:prayed_count] %> / <%= @period_stats[:expected_count] %> prayers
+          </span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= @period_stats[:completion_rate] %>%"></div>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span><%= @period_stats[:completion_rate] %>% completed</span>
+          <span><%= @period_stats[:recording_rate] %>% recorded</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-3xl font-bold text-indigo-600"><%= @period_stats[:expected_count] %></div>
+          <div class="text-sm text-gray-600">Expected</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-3xl font-bold text-green-600"><%= @period_stats[:prayed_count] %></div>
+          <div class="text-sm text-gray-600">Prayed</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-3xl font-bold text-red-600"><%= @period_stats[:missed_count] %></div>
+          <div class="text-sm text-gray-600">Missed</div>
+        </div>
+        <div class="text-center p-4 bg-gray-50 rounded-lg">
+          <div class="text-3xl font-bold text-blue-600"><%= @period_stats[:masjid_count] %></div>
+          <div class="text-sm text-gray-600">In Masjid</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prayer-wise Statistics -->
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Prayer-wise Progress</h2>
+      <div class="space-y-6">
+        <% @prayer_stats.each do |name, stats| %>
+          <div class="border-b pb-4 last:border-b-0 last:pb-0">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-lg font-medium text-gray-800"><%= name %></h3>
+              <span class="text-sm text-gray-500">
+                <%= stats[:prayed] %> / <%= stats[:expected] %> prayers
+              </span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+              <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= stats[:completion_rate] %>%"></div>
+            </div>
+            
+            <div class="grid grid-cols-4 gap-4">
+              <div class="text-center">
+                <div class="text-xl font-bold text-indigo-600"><%= stats[:expected] %></div>
+                <div class="text-xs text-gray-600">Expected</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-bold text-green-600"><%= stats[:prayed] %></div>
+                <div class="text-xs text-gray-600">Prayed</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-bold text-red-600"><%= stats[:missed] %></div>
+                <div class="text-xs text-gray-600">Missed</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-bold text-blue-600"><%= stats[:in_masjid] %></div>
+                <div class="text-xs text-gray-600">In Masjid</div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="bg-white p-6 rounded-xl shadow-sm">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">Daily Records</h2>
+      <div class="space-y-4">
+        <% @salahs.group_by { |s| s.created_at.to_date }.each do |date, day_salahs| %>
+          <div class="border-b pb-4 last:border-b-0 last:pb-0">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-lg font-medium text-gray-800"><%= date.strftime("%B %d, %Y") %></h3>
+              <span class="text-sm text-gray-500">
+                <%= day_salahs.count %> / <%= Salah::PRAYERS_PER_DAY %> prayers recorded
+              </span>
+            </div>
+            
+            <div class="grid gap-3">
+              <% day_salahs.each do |salah| %>
+                <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                  <div>
+                    <span class="font-medium text-gray-800"><%= salah.salah_name %></span>
+                    <span class="ml-2 text-sm text-gray-500"><%= salah.created_at.strftime("%I:%M %p") %></span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <span class="<%= salah.salah_prayed ? 'text-green-600' : 'text-red-600' %>">
+                      <%= salah.salah_prayed ? '✓ Prayed' : '✕ Missed' %>
+                    </span>
+                    <% if salah.prayed_in_masjid %>
+                      <span class="text-blue-600">📍 Masjid</span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @salahs.empty? %>
+          <div class="text-center text-gray-500 py-8">
+            No prayers recorded for this period.
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
