@@ -1,6 +1,6 @@
 module SalahsHelper
   def format_date_range(start_date, end_date, view_type)
-    if view_type == 'weekly'
+    if view_type == "weekly"
       "Week of #{start_date.strftime("%B %d")} - #{end_date.strftime("%B %d, %Y")}"
     else
       start_date.strftime("%B %Y")
