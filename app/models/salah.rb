@@ -2,9 +2,9 @@ class Salah < ApplicationRecord
   belongs_to :user
 
   PRAYERS_PER_DAY = 5
-  VALID_SALAH_NAMES = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].freeze
+  VALID_SALAH_NAMES = [ "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha" ].freeze
   validates :salah_name, presence: true, inclusion: { in: VALID_SALAH_NAMES }
-  validates :salah_prayed, inclusion: { in: [true, false] }
+  validates :salah_prayed, inclusion: { in: [ true, false ] }
   validate :unique_salah_per_day
   before_save :ensure_masjid_consistency
 
@@ -41,14 +41,14 @@ class Salah < ApplicationRecord
     masjid_count = salahs.in_masjid.count
 
     {
-      expected_count: expected_count,
-      actual_count: actual_count,
-      prayed_count: prayed_count,
-      missed_count: actual_count - prayed_count,
-      masjid_count: masjid_count,
-      completion_rate: calculate_percentage(prayed_count, expected_count),
-      recording_rate: calculate_percentage(actual_count, expected_count),
-      masjid_rate: calculate_percentage(masjid_count, actual_count)
+      expected: expected_count || 0,
+      actual: actual_count || 0,
+      prayed: prayed_count || 0,
+      missed: (actual_count - prayed_count) || 0,
+      in_masjid: masjid_count || 0,
+      completion_rate: calculate_percentage(prayed_count || 0, expected_count || 0),
+      recording_rate: calculate_percentage(actual_count || 0, expected_count || 0),
+      masjid_rate: calculate_percentage(masjid_count || 0, actual_count || 0)
     }
   end
 
@@ -59,7 +59,7 @@ class Salah < ApplicationRecord
 
   def unique_salah_per_day
     return unless new_record? || salah_name_changed?
-    
+
     if user.salahs.where(
       salah_name: salah_name,
       created_at: Time.zone.today.all_day
