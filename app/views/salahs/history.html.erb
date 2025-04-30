@@ -44,33 +44,33 @@
         <div class="flex justify-between items-center mb-2">
           <span class="text-sm font-medium text-gray-700">Total Progress</span>
           <span class="text-sm font-medium text-gray-700">
-            <%= @period_stats[:prayed_count] %> / <%= @period_stats[:expected_count] %> prayers
+            <%= @period_stats[:prayed].to_i %> / <%= @period_stats[:expected].to_i %> prayers
           </span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= @period_stats[:completion_rate] %>%"></div>
+          <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= @period_stats[:completion_rate].to_f %>%"></div>
         </div>
         <div class="flex justify-between text-xs text-gray-500 mt-1">
-          <span><%= @period_stats[:completion_rate] %>% completed</span>
-          <span><%= @period_stats[:recording_rate] %>% recorded</span>
+          <span><%= @period_stats[:completion_rate].to_f %>% completed</span>
+          <span><%= @period_stats[:recording_rate].to_f %>% recorded</span>
         </div>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="text-center p-4 bg-gray-50 rounded-lg">
-          <div class="text-3xl font-bold text-indigo-600"><%= @period_stats[:expected_count] %></div>
+          <div class="text-3xl font-bold text-indigo-600"><%= @period_stats[:expected].to_i %></div>
           <div class="text-sm text-gray-600">Expected</div>
         </div>
         <div class="text-center p-4 bg-gray-50 rounded-lg">
-          <div class="text-3xl font-bold text-green-600"><%= @period_stats[:prayed_count] %></div>
+          <div class="text-3xl font-bold text-green-600"><%= @period_stats[:prayed].to_i %></div>
           <div class="text-sm text-gray-600">Prayed</div>
         </div>
         <div class="text-center p-4 bg-gray-50 rounded-lg">
-          <div class="text-3xl font-bold text-red-600"><%= @period_stats[:missed_count] %></div>
+          <div class="text-3xl font-bold text-red-600"><%= @period_stats[:missed].to_i %></div>
           <div class="text-sm text-gray-600">Missed</div>
         </div>
         <div class="text-center p-4 bg-gray-50 rounded-lg">
-          <div class="text-3xl font-bold text-blue-600"><%= @period_stats[:masjid_count] %></div>
+          <div class="text-3xl font-bold text-blue-600"><%= @period_stats[:in_masjid].to_i %></div>
           <div class="text-sm text-gray-600">In Masjid</div>
         </div>
       </div>
