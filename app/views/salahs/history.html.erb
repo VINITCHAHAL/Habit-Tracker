@@ -80,36 +80,36 @@
     <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
       <h2 class="text-xl font-semibold text-gray-800 mb-4">Prayer-wise Progress</h2>
       <div class="space-y-6">
-        <% @prayer_stats.each do |name, stats| %>
-          <div class="border-b pb-4 last:border-b-0 last:pb-0">
-            <div class="flex justify-between items-center mb-2">
-              <h3 class="text-lg font-medium text-gray-800"><%= name %></h3>
-              <span class="text-sm text-gray-500">
-                <%= stats[:prayed] %> / <%= stats[:expected] %> prayers
-              </span>
+        <% @prayer_stats&.each do |name, stats| %>
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-gray-800"><%= name %></h3>
+            
+            <div class="flex justify-between items-center text-sm text-gray-500 mb-2">
+              <span><%= stats[:prayed].to_i %> / <%= stats[:expected].to_i %> prayers</span>
+              <span><%= stats[:completion_rate].to_f %>% completed</span>
             </div>
             
             <!-- Progress Bar -->
-            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3">
-              <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= stats[:completion_rate] %>%"></div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= stats[:completion_rate].to_f %>%"></div>
             </div>
-            
-            <div class="grid grid-cols-4 gap-4">
+
+            <div class="grid grid-cols-4 gap-4 mt-2">
               <div class="text-center">
-                <div class="text-xl font-bold text-indigo-600"><%= stats[:expected] %></div>
-                <div class="text-xs text-gray-600">Expected</div>
+                <div class="text-lg font-medium text-indigo-600"><%= stats[:expected].to_i %></div>
+                <div class="text-xs text-gray-500">Expected</div>
               </div>
               <div class="text-center">
-                <div class="text-xl font-bold text-green-600"><%= stats[:prayed] %></div>
-                <div class="text-xs text-gray-600">Prayed</div>
+                <div class="text-lg font-medium text-green-600"><%= stats[:prayed].to_i %></div>
+                <div class="text-xs text-gray-500">Prayed</div>
               </div>
               <div class="text-center">
-                <div class="text-xl font-bold text-red-600"><%= stats[:missed] %></div>
-                <div class="text-xs text-gray-600">Missed</div>
+                <div class="text-lg font-medium text-red-600"><%= stats[:missed].to_i %></div>
+                <div class="text-xs text-gray-500">Missed</div>
               </div>
               <div class="text-center">
-                <div class="text-xl font-bold text-blue-600"><%= stats[:in_masjid] %></div>
-                <div class="text-xs text-gray-600">In Masjid</div>
+                <div class="text-lg font-medium text-blue-600"><%= stats[:in_masjid].to_i %></div>
+                <div class="text-xs text-gray-500">In Masjid</div>
               </div>
             </div>
           </div>
