@@ -130,71 +130,54 @@
       </div>
     <% end %>
 
-    <!-- Salah Summary -->
-    <div class="text-sm text-gray-600 mb-6 text-center">
-      <%=
-        summary = case @view_mode 
+    <!-- Prayer Overview -->
+    <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+      <% stats = get_prayer_stats(@salahs) %>
+      
+      <h2 class="text-xl font-semibold text-gray-800 mb-4">
+        Prayer Overview - 
+        <%= case @view_mode 
           when 'weekly'
-            "Showing records for week of #{ERB::Util.h(@selected_date.beginning_of_week.strftime('%B %d, %Y'))}"
+            "#{ERB::Util.h(@selected_date.beginning_of_week.strftime('%B %d'))} - #{ERB::Util.h(@selected_date.end_of_week.strftime('%B %d, %Y'))}"
           when 'monthly'
-            "Showing records for #{ERB::Util.h(@selected_date.strftime('%B %Y'))}"
+            ERB::Util.h(@selected_date.strftime('%B %Y'))
           else
-            if @selected_date.to_date == Time.zone.today
-              "You've logged <strong>#{@salahs.count}</strong> Salah#{@salahs.count == 1 ? '' : 's'} today.".html_safe
-            else
-              "Showing records for #{ERB::Util.h(@selected_date.strftime('%B %d, %Y'))}"
-            end
+            ERB::Util.h(@selected_date.strftime('%B %d, %Y'))
           end
-        summary
-      %>
-    </div>
+        %>
+      </h2>
 
-    <!-- Salah Records -->
-    <div class="space-y-10">
-      <% if @salahs.any? %>
-        <% @salahs.each do |salah| %>
-          <div class="bg-white p-5 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <div class="space-y-1 lg:space-x-10">
-              <p class="text-lg font-semibold text-gray-800"><%= salah.salah_name %></p>
-              <p class="text-sm text-gray-500">Logged at <%= salah.created_at.strftime("%I:%M %p") %></p>
-              <div class="flex flex-col space-y-1">
-                <p class="text-sm">
-                  <% if salah.salah_prayed %>
-                    <span class="text-green-600 font-medium">✔ Prayed</span>
-                  <% else %>
-                    <span class="text-red-500 font-medium">✘ Missed</span>
-                  <% end %>
-                </p>
-                <% if salah.salah_prayed %>
-                  <p class="text-sm">
-                    <% if salah.prayed_in_masjid %>
-                      <span class="text-green-600 font-medium">✔ In Masjid</span>
-                    <% else %>
-                      <span class="text-blue-500 font-medium">At Home/Other</span>
-                    <% end %>
-                  </p>
-                <% end %>
+      <div class="space-y-6">
+        <% ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"].each do |prayer| %>
+          <% prayer_stats = stats[:prayers][prayer] %>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-lg text-gray-900"><%= prayer %></h3>
+              <% expected_count = stats[:total_expected] / 5 %>
+              <span class="text-sm text-gray-500">
+                <%= "#{prayer_stats[:prayed_in_masjid] + prayer_stats[:prayed_at_home]}/#{expected_count} Completed" %>
+              </span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="text-lg font-bold text-green-600"><%= prayer_stats[:prayed_in_masjid] %></div>
+                <div class="text-sm text-gray-600">Prayed in Masjid</div>
+              </div>
+              
+              <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="text-lg font-bold text-blue-600"><%= prayer_stats[:prayed_at_home] %></div>
+                <div class="text-sm text-gray-600">Prayed at Home</div>
+              </div>
+              
+              <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="text-lg font-bold text-red-600"><%= prayer_stats[:missed] %></div>
+                <div class="text-sm text-gray-600">Missed</div>
               </div>
             </div>
-
-            <!-- Show action buttons only for today's records -->
-            <% if @selected_date&.to_date == Time.zone.today %>
-              <div class="flex gap-2 sm:gap-3">
-                <%= button_to "Delete", salah_path(salah), method: :delete,
-                    class: "px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm rounded-full shadow-sm transition" %>
-
-                <%= button_to "Toggle Status", salah_path(salah, toggle_status: true), method: :patch,
-                    class: "px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-full shadow-sm transition" %>
-              </div>
-            <% end %>
           </div>
         <% end %>
-      <% else %>
-        <div class="bg-white p-6 text-center text-gray-500 text-sm rounded-xl shadow-sm">
-          No Salah records found for this <%= @view_mode %> period.
-        </div>
-      <% end %>
+      </div>
     </div>
-
   </div>
 </div>
